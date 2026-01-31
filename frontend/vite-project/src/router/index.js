@@ -1,15 +1,49 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../pages/Home.vue';
+import { useAuthStore } from '../store/authStore';
 import Login from '../pages/Login.vue';
+import Signup from '../pages/Signup.vue';
+import UserDashboard from '../pages/UserDashboard.vue';
 
 const routes = [
-    { path: '/', component: Home },
-    { path: '/login', component: Login }
+    { 
+        path: '/', 
+        redirect: '/login'
+    },
+    { 
+        path: '/login', 
+        component: Login,
+        meta: { requiresGuest: true }
+    },
+    { 
+        path: '/signup', 
+        component: Signup,
+        meta: { requiresGuest: true }
+    },
+    { 
+        path: '/dashboard', 
+        component: UserDashboard,
+        meta: { requiresAuth: true }
+    }
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     routes
+});
+
+// Route guard for authentication
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore();
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiresGuest = to.matched.some(record => record.meta.requiresGuest);
+
+    if (requiresAuth && !authStore.isAuthenticated) {
+        next('/login');
+    } else if (requiresGuest && authStore.isAuthenticated) {
+        next('/dashboard');
+    } else {
+        next();
+    }
 });
 
 export default router;

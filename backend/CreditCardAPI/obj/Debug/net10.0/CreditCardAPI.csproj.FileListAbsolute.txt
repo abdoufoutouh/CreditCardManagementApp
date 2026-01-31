@@ -9,7 +9,7 @@ C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Cred
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Azure.Core.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Azure.Identity.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Humanizer.dll
-C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.Build.Framework.dll
@@ -34,7 +34,6 @@ C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Micr
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
-C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.OpenApi.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Microsoft.VisualStudio.SolutionPersistence.dll
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\bin\Debug\net10.0\Mono.TextTemplating.dll
@@ -139,7 +138,6 @@ C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\Cred
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\CreditCardAPI.AssemblyInfoInputs.cache
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\CreditCardAPI.AssemblyInfo.cs
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\CreditCardAPI.csproj.CoreCompileInputs.cache
-C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\CreditCardAPI.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\CreditCardAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\CreditCardAPI.sourcelink.json
 C:\Users\Hp\CreditCardManagementApp\backend\CreditCardAPI\obj\Debug\net10.0\rjimswa.dswa.cache.json

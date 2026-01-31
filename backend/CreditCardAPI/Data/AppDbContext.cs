@@ -13,6 +13,7 @@ namespace CreditCardManagementApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
             modelBuilder.Entity<CreditCard>()
                 .Property(c => c.CreditLimit)
                 .HasPrecision(18, 2);
@@ -20,6 +21,27 @@ namespace CreditCardManagementApp.Data
             modelBuilder.Entity<CreditCard>()
                 .Property(c => c.CurrentBalance)
                 .HasPrecision(18, 2);
+
+           
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Password)
+                .HasMaxLength(500);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Email)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.FirstName)
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.LastName)
+                .HasMaxLength(50);
 
             base.OnModelCreating(modelBuilder);
         }

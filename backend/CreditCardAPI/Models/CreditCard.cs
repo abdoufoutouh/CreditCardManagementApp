@@ -14,7 +14,7 @@ namespace CreditCardManagementApp.Models
         public DateTime ExpirationDate { get; set; }
 
         [Required]
-        public decimal CreditLimit { get; set; } = 0m;      // ici la propriété manquante
+        public decimal CreditLimit { get; set; } = 0m;      
         [Required]
         public decimal CurrentBalance { get; set; } = 0m;
 
