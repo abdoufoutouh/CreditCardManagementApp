@@ -1,6 +1,7 @@
 using System.Text;
 using CreditCardManagementApp.Data;
 using CreditCardManagementApp.Helpers;
+using CreditCardManagementApp.Repositories;
 using CreditCardManagementApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,10 @@ builder.Services.AddAuthentication(options =>
 // Register custom services
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Register CreditCard services and repositories
+builder.Services.AddScoped<ICreditCardRepository, CreditCardRepository>();
+builder.Services.AddScoped<ICreditCardService, CreditCardService>();
 
 // Configure CORS if needed
 builder.Services.AddCors(options =>

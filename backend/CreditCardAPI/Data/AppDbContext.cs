@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-// Ajoute cette ligne pour trouver tes modèles
 using CreditCardManagementApp.Models;
 
 namespace CreditCardManagementApp.Data
@@ -13,7 +12,6 @@ namespace CreditCardManagementApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
             modelBuilder.Entity<CreditCard>()
                 .Property(c => c.CreditLimit)
                 .HasPrecision(18, 2);
@@ -22,7 +20,12 @@ namespace CreditCardManagementApp.Data
                 .Property(c => c.CurrentBalance)
                 .HasPrecision(18, 2);
 
-           
+            modelBuilder.Entity<CreditCard>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.CreditCards)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
