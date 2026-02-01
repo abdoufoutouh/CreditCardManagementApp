@@ -39,6 +39,12 @@ namespace CreditCardManagementApp.Repositories
             return creditCard;
         }
 
+        public async Task<bool> DeleteAsync(CreditCard creditCard)
+        {
+            _context.CreditCards.Remove(creditCard);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<List<CreditCard>> GetByUserIdAsync(int userId)
         {
             return await _context.CreditCards
@@ -48,9 +54,6 @@ namespace CreditCardManagementApp.Repositories
 
         public async Task<int> GetActiveCountByUserIdAsync(int userId)
         {
-            // Since IsActive is not mapped to database and new cards are created with IsActive = false,
-            // all cards are currently inactive. Return 0 for now.
-            // TODO: Implement proper active card tracking when database schema is updated
             return 0;
         }
 

@@ -1,6 +1,8 @@
 using CreditCardManagementApp.DTOS;
 using CreditCardManagementApp.Models;
 using CreditCardManagementApp.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CreditCardManagementApp.Services
 {
@@ -176,6 +178,7 @@ namespace CreditCardManagementApp.Services
             existingCard.CreditLimit = dto.CreditLimit;
             existingCard.CurrentBalance = dto.CurrentBalance;
             existingCard.Type = dto.Type;
+            
             // Note: IsActive is not mapped to database, so we don't update it here
 
             // Update the record
@@ -190,6 +193,85 @@ namespace CreditCardManagementApp.Services
                 IsActive = updatedCard.IsActive,
                 Message = "Credit card updated successfully"
             };
+        }
+
+        public async Task<CreditCardResponseDTO?> DeleteCreditCardAsync(DeleteCreditCardDTO dto, int userId)
+        {
+            var existingCard = await _repository.FindByIdAsync(dto.Id);
+            if (existingCard == null || existingCard.UserId != userId)
+            {
+                return null;
+            }
+
+            if (existingCard.CurrentBalance > 0)
+            {
+                return null;
+            }
+
+            var deleted = await _repository.DeleteAsync(existingCard);
+            if (!deleted)
+            {
+                return null;
+            }
+
+            return new CreditCardResponseDTO
+            {
+                Id = existingCard.Id,
+                CardNumberPartial = GetLastFourDigits(existingCard.CardNumber),
+                CreditLimit = existingCard.CreditLimit,
+                CurrentBalance = existingCard.CurrentBalance,
+                IsActive = existingCard.IsActive,
+                Message = "Credit card deleted successfully"
+            };
+        }
+
+        public async Task<CreditCardResponseDTO?> GetCreditCardByIdAsync(int id, int userId)
+        {
+            var existingCard = await _repository.FindByIdAsync(id);
+            if (existingCard == null || existingCard.UserId != userId)
+            {
+                return null;
+            }
+
+            return new CreditCardResponseDTO
+            {
+                Id = existingCard.Id,
+                CardNumberPartial = GetLastFourDigits(existingCard.CardNumber),
+                CreditLimit = existingCard.CreditLimit,
+                CurrentBalance = existingCard.CurrentBalance,
+                IsActive = existingCard.IsActive,
+                Message = "Credit card retrieved successfully"
+            };
+        }
+
+        public async Task<CreditCardListDTO> GetCreditCardsAsync(int userId, bool? isActive)
+        {
+            var cards = await _repository.GetByUserIdAsync(userId);
+
+            if (isActive.HasValue)
+            {
+                cards = cards.Where(c => c.IsActive == isActive.Value).ToList();
+            }
+
+            var response = new CreditCardListDTO
+            {
+                Message = "Credit cards retrieved successfully"
+            };
+
+            foreach (var card in cards)
+            {
+                response.Cards.Add(new CreditCardResponseDTO
+                {
+                    Id = card.Id,
+                    CardNumberPartial = GetLastFourDigits(card.CardNumber),
+                    CreditLimit = card.CreditLimit,
+                    CurrentBalance = card.CurrentBalance,
+                    IsActive = card.IsActive,
+                    Message = string.Empty
+                });
+            }
+
+            return response;
         }
 
         private bool ValidateCardNumber(string cardNumber)

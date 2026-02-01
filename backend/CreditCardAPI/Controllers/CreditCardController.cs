@@ -143,5 +143,163 @@ namespace CreditCardManagementApp.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCreditCards([FromQuery] bool? isActive = null, [FromQuery] int? userId = null)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int authenticatedUserId))
+                {
+                    return Unauthorized(new ApiResponse<CreditCardListDTO>
+                    {
+                        Success = false,
+                        Message = "Invalid user authentication",
+                        Data = null
+                    });
+                }
+
+                if (userId.HasValue && userId.Value != authenticatedUserId)
+                {
+                    return BadRequest(new ApiResponse<CreditCardListDTO>
+                    {
+                        Success = false,
+                        Message = "Invalid userId filter. You can only retrieve your own credit cards.",
+                        Data = null
+                    });
+                }
+
+                var response = await _creditCardService.GetCreditCardsAsync(authenticatedUserId, isActive);
+
+                return Ok(new ApiResponse<CreditCardListDTO>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<CreditCardListDTO>
+                {
+                    Success = false,
+                    Message = $"An error occurred while retrieving the credit cards: {ex.Message}",
+                    Data = null
+                });
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCreditCardById(int id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Unauthorized(new ApiResponse<CreditCardResponseDTO>
+                    {
+                        Success = false,
+                        Message = "Invalid user authentication",
+                        Data = null
+                    });
+                }
+
+                var response = await _creditCardService.GetCreditCardByIdAsync(id, userId);
+
+                if (response == null)
+                {
+                    return BadRequest(new ApiResponse<CreditCardResponseDTO>
+                    {
+                        Success = false,
+                        Message = "Credit card not found or you don't have access to it.",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ApiResponse<CreditCardResponseDTO>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<CreditCardResponseDTO>
+                {
+                    Success = false,
+                    Message = $"An error occurred while retrieving the credit card: {ex.Message}",
+                    Data = null
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCreditCard(int id, [FromBody] DeleteCreditCardDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse<CreditCardResponseDTO>
+                {
+                    Success = false,
+                    Message = "Invalid input data. Please check your input fields.",
+                    Data = null
+                });
+            }
+
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Unauthorized(new ApiResponse<CreditCardResponseDTO>
+                    {
+                        Success = false,
+                        Message = "Invalid user authentication",
+                        Data = null
+                    });
+                }
+
+                if (id != dto.Id)
+                {
+                    return BadRequest(new ApiResponse<CreditCardResponseDTO>
+                    {
+                        Success = false,
+                        Message = "ID mismatch between URL and request body.",
+                        Data = null
+                    });
+                }
+
+                var response = await _creditCardService.DeleteCreditCardAsync(dto, userId);
+
+                if (response == null)
+                {
+                    return BadRequest(new ApiResponse<CreditCardResponseDTO>
+                    {
+                        Success = false,
+                        Message = "Credit card delete failed. Ensure the card exists, belongs to you, and has a current balance of 0.",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ApiResponse<CreditCardResponseDTO>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<CreditCardResponseDTO>
+                {
+                    Success = false,
+                    Message = $"An error occurred while deleting the credit card: {ex.Message}",
+                    Data = null
+                });
+            }
+        }
     }
 }
