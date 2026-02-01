@@ -1,100 +1,78 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-card">
-      <h1>User Dashboard</h1>
-      <div class="success-message">
-        <p>You are successfully connected</p>
-      </div>
-      <div v-if="authStore.user" class="user-info">
-        <p><strong>Name:</strong> {{ authStore.user.firstName }} {{ authStore.user.lastName }}</p>
-        <p><strong>Email:</strong> {{ authStore.user.email }}</p>
-      </div>
-      <button @click="handleLogout" class="logout-btn">Logout</button>
+  <DashboardLayout title="Dashboard" username="John Doe">
+    <div class="dashboard-content">
+      <WelcomeSection />
+      
+      <StatsSection :stats="stats" />
+      
+      <CardsSection :cards="creditCards" />
+      
+      <ActivitySection />
     </div>
-  </div>
+  </DashboardLayout>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '../store/authStore';
+import { ref } from 'vue';
+import DashboardLayout from '../components/layout/DashboardLayout.vue';
+import WelcomeSection from '../components/sections/WelcomeSection.vue';
+import StatsSection from '../components/sections/StatsSection.vue';
+import CardsSection from '../components/sections/CardsSection.vue';
+import ActivitySection from '../components/sections/ActivitySection.vue';
 
-const router = useRouter();
-const authStore = useAuthStore();
+const stats = ref([
+  {
+    id: 1,
+    title: 'Total Cards',
+    value: '3',
+    icon: '💳',
+    iconColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  {
+    id: 2,
+    title: 'Active Cards',
+    value: '2',
+    icon: '✅',
+    iconColor: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)'
+  },
+  {
+    id: 3,
+    title: 'Total Balance',
+    value: '$12,450',
+    icon: '💰',
+    iconColor: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)'
+  },
+  {
+    id: 4,
+    title: 'Last Activity',
+    value: '2h ago',
+    icon: '🕐',
+    iconColor: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)'
+  }
+]);
 
-const handleLogout = async () => {
-  await authStore.logout();
-  router.push('/login');
-};
+const creditCards = ref([
+  {
+    id: 1,
+    cardType: 'Visa',
+    maskedNumber: ['****', '****', '****', '1234'],
+    cardholderName: 'John Doe',
+    expirationDate: '12/25'
+  },
+  {
+    id: 2,
+    cardType: 'MasterCard',
+    maskedNumber: ['****', '****', '****', '5678'],
+    cardholderName: 'John Doe',
+    expirationDate: '09/24'
+  }
+]);
 </script>
 
 <style scoped>
-.dashboard-container {
+.dashboard-content {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.dashboard-card {
-  background: white;
-  border-radius: 12px;
-  padding: 40px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
-
-h1 {
-  margin: 0 0 30px 0;
-  color: #333;
-  font-size: 32px;
-}
-
-.success-message {
-  background: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.success-message p {
-  margin: 0;
-  color: #155724;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.user-info {
-  text-align: left;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.user-info p {
-  margin: 10px 0;
-  color: #555;
-}
-
-.logout-btn {
-  width: 100%;
-  padding: 12px;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.logout-btn:hover {
-  background: #c0392b;
+  flex-direction: column;
+  gap: 30px;
 }
 </style>
