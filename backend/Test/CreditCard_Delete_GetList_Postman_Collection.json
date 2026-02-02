@@ -1,0 +1,123 @@
+{
+  "info": {
+    "_postman_id": "b7a59c36-5bdb-4c2e-97e2-7a77fbf7b0e1",
+    "name": "CreditCard - Get/List & Delete",
+    "description": "Tests for GET /api/CreditCard, GET /api/CreditCard/{id}, and DELETE /api/CreditCard/{id}. Set variables base_url, jwt_token, and card_id.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get/List - All cards (current user)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}", "type": "text" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/CreditCard",
+          "host": ["{{base_url}}"],
+          "path": ["api", "CreditCard"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Success is true', function () { pm.expect(pm.response.json().success).to.eql(true); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get/List - Filter isActive=false",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}", "type": "text" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/CreditCard?isActive=false",
+          "host": ["{{base_url}}"],
+          "path": ["api", "CreditCard"],
+          "query": [
+            { "key": "isActive", "value": "false" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get by Id - Success",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}", "type": "text" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/CreditCard/{{card_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "CreditCard", "{{card_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete - Fail (balance > 0)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{card_id}}\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/CreditCard/{{card_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "CreditCard", "{{card_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete - Success (requires CurrentBalance = 0)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{card_id}}\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/CreditCard/{{card_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "CreditCard", "{{card_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5249" },
+    { "key": "jwt_token", "value": "" },
+    { "key": "card_id", "value": "7" }
+  ]
+}
