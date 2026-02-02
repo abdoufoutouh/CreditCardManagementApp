@@ -9,5 +9,6 @@ namespace CreditCardManagementApp.Services
         Task<CreditCardResponseDTO?> DeleteCreditCardAsync(DeleteCreditCardDTO dto, int userId);
         Task<CreditCardResponseDTO?> GetCreditCardByIdAsync(int id, int userId);
         Task<CreditCardListDTO> GetCreditCardsAsync(int userId, bool? isActive);
+        Task<CreditCardListDTO> SearchCreditCardsAsync(int userId, string? cardType, string? cardNumber);
     }
 }

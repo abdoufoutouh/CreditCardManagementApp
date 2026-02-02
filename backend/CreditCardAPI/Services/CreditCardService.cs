@@ -244,6 +244,46 @@ namespace CreditCardManagementApp.Services
             return response;
         }
 
+        public async Task<CreditCardListDTO> SearchCreditCardsAsync(int userId, string? cardType, string? cardNumber)
+        {
+            var cards = await _repository.GetByUserIdAsync(userId);
+
+            // Filter by card type if provided
+            if (!string.IsNullOrWhiteSpace(cardType))
+            {
+                cards = cards.Where(c => c.Type.Equals(cardType, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Filter by card number (last 4 digits) if provided
+            if (!string.IsNullOrWhiteSpace(cardNumber))
+            {
+                var cleanedSearchNumber = cardNumber.Replace(" ", "").Replace("-", "");
+                cards = cards.Where(c => GetLastFourDigits(c.CardNumber).EndsWith(cleanedSearchNumber)).ToList();
+            }
+
+            var response = new CreditCardListDTO
+            {
+                Message = "Search completed successfully"
+            };
+
+            foreach (var card in cards)
+            {
+                response.Cards.Add(new CreditCardResponseDTO
+                {
+                    Id = card.Id,
+                    CardNumberPartial = GetLastFourDigits(card.CardNumber),
+                    ExpirationDate = card.ExpirationDate,
+                    CreditLimit = card.CreditLimit,
+                    CurrentBalance = card.CurrentBalance,
+                    IsActive = card.IsActive,
+                    Type = card.Type,
+                    Message = string.Empty
+                });
+            }
+
+            return response;
+        }
+
         private bool ValidateCardNumber(string cardNumber)
         {
             var cleanedNumber = cardNumber.Replace(" ", "").Replace("-", "");

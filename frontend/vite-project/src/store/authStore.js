@@ -13,6 +13,40 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     /**
+     * Decode JWT token to extract user info
+     */
+    decodeToken(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+        return null;
+      }
+    },
+
+    /**
+     * Initialize auth state from stored token
+     */
+    initializeAuth() {
+      if (this.token && !this.user) {
+        const decoded = this.decodeToken(this.token);
+        if (decoded) {
+          this.user = {
+            userId: decoded.sub || decoded.userId,
+            email: decoded.email,
+            firstName: decoded.firstName,
+            lastName: decoded.lastName,
+          };
+        }
+      }
+    },
+
+    /**
      * Login user and store token
      */
     async login(email, password) {

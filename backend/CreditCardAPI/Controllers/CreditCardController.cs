@@ -216,6 +216,52 @@ namespace CreditCardManagementApp.Controllers
             }
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchCreditCards([FromQuery] string? cardType = null, [FromQuery] string? cardNumber = null)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Unauthorized(new ApiResponse<CreditCardListDTO>
+                    {
+                        Success = false,
+                        Message = "Invalid user authentication",
+                        Data = null
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(cardType) && string.IsNullOrWhiteSpace(cardNumber))
+                {
+                    return BadRequest(new ApiResponse<CreditCardListDTO>
+                    {
+                        Success = false,
+                        Message = "Please provide at least one search criteria (cardType or cardNumber).",
+                        Data = null
+                    });
+                }
+
+                var response = await _creditCardService.SearchCreditCardsAsync(userId, cardType, cardNumber);
+
+                return Ok(new ApiResponse<CreditCardListDTO>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<CreditCardListDTO>
+                {
+                    Success = false,
+                    Message = $"An error occurred while searching credit cards: {ex.Message}",
+                    Data = null
+                });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCreditCardById(int id)
         {

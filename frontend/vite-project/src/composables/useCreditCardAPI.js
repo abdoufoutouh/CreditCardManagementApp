@@ -263,6 +263,60 @@ export function useCreditCardAPI() {
     }
   };
 
+  const searchCreditCards = async (cardType, cardNumber) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const params = new URLSearchParams();
+      if (cardType) params.append('cardType', cardType);
+      if (cardNumber) params.append('cardNumber', cardNumber);
+
+      const response = await fetch(`${API_BASE_URL}/creditcard/search?${params.toString()}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      });
+
+      let responseData = null;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          responseData = await response.json();
+        } catch (jsonError) {
+          responseData = null;
+        }
+      }
+
+      if (!response.ok) {
+        const errorMessage = responseData?.message || 
+                           response.statusText || 
+                           `HTTP error! status: ${response.status}`;
+        return {
+          success: false,
+          error: errorMessage,
+          status: response.status
+        };
+      }
+
+      return {
+        success: responseData?.success ?? true,
+        message: responseData?.message || 'Search completed successfully',
+        data: responseData?.data?.cards || responseData?.data || [],
+        status: response.status
+      };
+    } catch (err) {
+      error.value = err.message;
+      return {
+        success: false,
+        error: err.message,
+        status: err.status || 500
+      };
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   const clearError = () => {
     error.value = null;
   };
@@ -327,6 +381,7 @@ export function useCreditCardAPI() {
     updateCreditCard,
     deleteCreditCard,
     generateCardNumber,
+    searchCreditCards,
     clearError
   };
 }

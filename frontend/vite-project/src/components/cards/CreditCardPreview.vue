@@ -40,14 +40,6 @@
     
     <div v-if="showActions" class="card-actions">
       <Button 
-        variant="primary" 
-        size="small" 
-        @click="$emit('show-details', cardId)"
-        class="action-btn"
-      >
-        Details
-      </Button>
-      <Button 
         variant="secondary" 
         size="small" 
         @click="$emit('update', cardId)"

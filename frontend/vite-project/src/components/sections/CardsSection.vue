@@ -22,7 +22,7 @@
         :card-id="card.id"
         :card-type="card.cardType"
         :card-number="card.cardNumber"
-        :cardholder-name="card.cardholderName"
+        :cardholder-name="cardholderName"
         :expiration-date="card.expirationDate"
         :credit-limit="card.creditLimit"
         :current-balance="card.currentBalance"
@@ -47,6 +47,10 @@ defineProps({
   loading: {
     type: Boolean,
     default: false
+  },
+  cardholderName: {
+    type: String,
+    default: 'CARD HOLDER'
   }
 });
 
