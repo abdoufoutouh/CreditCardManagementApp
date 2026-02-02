@@ -20,6 +20,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import DashboardLayout from '../components/layout/DashboardLayout.vue';
 import WelcomeSection from '../components/sections/WelcomeSection.vue';
 import StatsSection from '../components/sections/StatsSection.vue';
@@ -27,7 +28,8 @@ import CardsSection from '../components/sections/CardsSection.vue';
 import ActivitySection from '../components/sections/ActivitySection.vue';
 import { useCreditCardAPI } from '../composables/useCreditCardAPI';
 
-const { getCreditCards, isLoading: isLoadingCards } = useCreditCardAPI();
+const router = useRouter();
+const { getCreditCards, deleteCreditCard, isLoading: isLoadingCards } = useCreditCardAPI();
 
 const rawCreditCards = ref([]);
 const errorMessage = ref('');
@@ -134,15 +136,32 @@ const handleShowDetails = (cardId) => {
 };
 
 const handleUpdate = (cardId) => {
-  console.log('Update card:', cardId);
-  // TODO: Implement update functionality
+  router.push(`/creditcards/edit/${cardId}`);
 };
 
 const handleDelete = async (cardId) => {
-  console.log('Delete card:', cardId);
-  // TODO: Implement delete functionality
-  // After successful delete, reload cards
-  // await loadCreditCards();
+  if (!confirm('Are you sure you want to delete this credit card?')) {
+    return;
+  }
+
+  try {
+    const result = await deleteCreditCard(cardId);
+    
+    if (result.success) {
+      errorMessage.value = '';
+      // Reload cards after successful deletion
+      await loadCreditCards();
+      alert('Credit card deleted successfully!');
+    } else {
+      errorMessage.value = result.error || 'Failed to delete credit card';
+      alert(`Error: ${result.error || 'Failed to delete credit card. Make sure the card has a zero balance.'}`);
+      console.error('Failed to delete credit card:', result);
+    }
+  } catch (error) {
+    errorMessage.value = error.message || 'An unexpected error occurred';
+    alert(`Error: ${error.message || 'An unexpected error occurred'}`);
+    console.error('Error deleting credit card:', error);
+  }
 };
 
 // Load cards when component mounts

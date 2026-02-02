@@ -118,35 +118,11 @@ namespace CreditCardManagementApp.Services
             };
         }
 
-        public async Task<CreditCardResponseDTO?> UpdateCreditCardAsync(UpdateCreditCardDTO dto, int userId)
+        public async Task<CreditCardResponseDTO?> UpdateCreditCardAsync(int id, UpdateCreditCardDTO dto, int userId)
         {
             // Find existing credit card by ID and ensure it belongs to the user
-            var existingCard = await _repository.FindByIdAsync(dto.Id);
+            var existingCard = await _repository.FindByIdAsync(id);
             if (existingCard == null || existingCard.UserId != userId)
-            {
-                return null;
-            }
-
-            // Check if new card number is unique GLOBALLY (except current record)
-            if (dto.CardNumber != existingCard.CardNumber)
-            {
-                var duplicateCard = await _repository.FindByCardNumberAsync(dto.CardNumber);
-                if (duplicateCard != null)
-                {
-                    return null; // Numéro de carte déjà utilisé globalement
-                }
-            }
-
-            // Validate card number format and Luhn algorithm
-            if (!ValidateCardNumber(dto.CardNumber))
-            {
-                return null;
-            }
-
-            // Validate expiration date (future and ≤ 10 years)
-            var now = DateTime.UtcNow;
-            var maxExpirationDate = now.AddYears(10);
-            if (dto.ExpirationDate <= now || dto.ExpirationDate > maxExpirationDate)
             {
                 return null;
             }
@@ -163,26 +139,9 @@ namespace CreditCardManagementApp.Services
                 return null;
             }
 
-            // Validate card type and prefix match
-            if (!ValidateCardType(dto.Type, dto.CardNumber))
-            {
-                return null;
-            }
-
-            // Check for blacklisted card numbers
-            if (BlacklistedCardNumbers.Contains(dto.CardNumber))
-            {
-                return null;
-            }
-
-            // Map DTO to Entity
-            existingCard.CardNumber = dto.CardNumber;
-            existingCard.ExpirationDate = dto.ExpirationDate;
+            // Update only CreditLimit and CurrentBalance
             existingCard.CreditLimit = dto.CreditLimit;
             existingCard.CurrentBalance = dto.CurrentBalance;
-            existingCard.Type = dto.Type;
-            
-            // Note: IsActive is not mapped to database, so we don't update it here
 
             // Update the record
             var updatedCard = await _repository.UpdateAsync(existingCard);

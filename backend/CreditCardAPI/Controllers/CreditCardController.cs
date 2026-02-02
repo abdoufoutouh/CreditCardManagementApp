@@ -140,25 +140,14 @@ namespace CreditCardManagementApp.Controllers
                     });
                 }
 
-                // Ensure the ID in the URL matches the ID in the DTO
-                if (id != dto.Id)
-                {
-                    return BadRequest(new ApiResponse<CreditCardResponseDTO>
-                    {
-                        Success = false,
-                        Message = "ID mismatch between URL and request body.",
-                        Data = null
-                    });
-                }
-
-                var response = await _creditCardService.UpdateCreditCardAsync(dto, userId);
+                var response = await _creditCardService.UpdateCreditCardAsync(id, dto, userId);
 
                 if (response == null)
                 {
                     return BadRequest(new ApiResponse<CreditCardResponseDTO>
                     {
                         Success = false,
-                        Message = "This card number is already in use. Please use a different card number.",
+                        Message = "Credit card not found or update failed.",
                         Data = null
                     });
                 }

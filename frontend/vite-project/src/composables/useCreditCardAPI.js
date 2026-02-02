@@ -120,7 +120,7 @@ export function useCreditCardAPI() {
     error.value = null;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/creditcards/${cardId}`, {
+      const response = await fetch(`${API_BASE_URL}/creditcard/${cardId}`, {
         method: 'GET',
         headers: getAuthHeaders()
       });
@@ -166,7 +166,7 @@ export function useCreditCardAPI() {
     error.value = null;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/creditcards/${cardId}`, {
+      const response = await fetch(`${API_BASE_URL}/creditcard/${cardId}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(cardData)
@@ -188,11 +188,16 @@ export function useCreditCardAPI() {
         const errorMessage = responseData?.message || 
                            response.statusText || 
                            `HTTP error! status: ${response.status}`;
-        throw new Error(errorMessage);
+        return {
+          success: false,
+          data: responseData || { message: errorMessage },
+          error: errorMessage,
+          status: response.status
+        };
       }
 
       return {
-        success: true,
+        success: responseData?.success ?? true,
         data: responseData || { message: 'Credit card updated successfully' },
         status: response.status
       };
@@ -213,31 +218,37 @@ export function useCreditCardAPI() {
     error.value = null;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/creditcards/${cardId}`, {
+      const response = await fetch(`${API_BASE_URL}/creditcard/${cardId}`, {
         method: 'DELETE',
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ id: cardId })
       });
 
-      if (!response.ok) {
-        let responseData = null;
-        const contentType = response.headers.get('content-type');
-        
-        if (contentType && contentType.includes('application/json')) {
-          try {
-            responseData = await response.json();
-          } catch (jsonError) {
-            responseData = null;
-          }
+      let responseData = null;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          responseData = await response.json();
+        } catch (jsonError) {
+          responseData = null;
         }
-        
+      }
+
+      if (!response.ok) {
         const errorMessage = responseData?.message || 
                            response.statusText || 
                            `HTTP error! status: ${response.status}`;
-        throw new Error(errorMessage);
+        return {
+          success: false,
+          error: errorMessage,
+          status: response.status
+        };
       }
 
       return {
-        success: true,
+        success: responseData?.success ?? true,
+        message: responseData?.message || 'Credit card deleted successfully',
         status: response.status
       };
     } catch (err) {

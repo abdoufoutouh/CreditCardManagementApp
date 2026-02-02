@@ -4,6 +4,7 @@ import Login from '../pages/Login.vue';
 import Signup from '../pages/Signup.vue';
 import UserDashboard from '../pages/UserDashboard.vue';
 import CreateCreditCard from '../pages/creditcards/CreateCreditCard.vue';
+import EditCreditCard from '../pages/creditcards/EditCreditCard.vue';
 
 const routes = [
     { 
@@ -28,6 +29,11 @@ const routes = [
     { 
         path: '/creditcards/create', 
         component: CreateCreditCard,
+        meta: { requiresAuth: true }
+    },
+    { 
+        path: '/creditcards/edit/:id', 
+        component: EditCreditCard,
         meta: { requiresAuth: true }
     }
 ];
