@@ -40,13 +40,14 @@ namespace CreditCardManagementApp.Services
 
         public async Task<CreditCardResponseDTO?> CreateCreditCardAsync(CreateCreditCardDTO dto, int userId)
         {
-            // Vérifier l'unicité GLOBALE du numéro de carte (pas seulement par utilisateur)
+            // Vérifier l'unicité GLOBALE du numéro de carte
             var existingCard = await _repository.FindByCardNumberAsync(dto.CardNumber);
             if (existingCard != null)
             {
                 return null; // Numéro de carte déjà utilisé globalement
             }
 
+            // Validation complète du numéro de carte
             if (!ValidateCardNumber(dto.CardNumber))
             {
                 return null;
@@ -283,6 +284,70 @@ namespace CreditCardManagementApp.Services
             }
 
             return response;
+        }
+
+        public string GenerateValidCardNumber(string cardType)
+        {
+            // Valider le type de carte
+            if (!CardTypePrefixes.ContainsKey(cardType))
+            {
+                return string.Empty;
+            }
+
+            var prefixes = CardTypePrefixes[cardType];
+            var random = new Random();
+            
+            // Choisir un préfixe aléatoire pour le type de carte
+            var prefix = prefixes[random.Next(prefixes.Length)];
+            
+            // Générer les chiffres restants (15 chiffres - longueur du préfixe)
+            var remainingDigits = 15 - prefix.Length;
+            var cardNumberWithoutChecksum = prefix;
+            
+            for (int i = 0; i < remainingDigits; i++)
+            {
+                cardNumberWithoutChecksum += random.Next(0, 10).ToString();
+            }
+            
+            // Calculer le chiffre de contrôle Luhn
+            var checksumDigit = CalculateLuhnChecksum(cardNumberWithoutChecksum);
+            var finalCardNumber = cardNumberWithoutChecksum + checksumDigit;
+            
+            // Vérifier que le numéro n'est pas dans la blacklist
+            if (BlacklistedCardNumbers.Contains(finalCardNumber))
+            {
+                // Régénérer si blacklisté (récursion simple)
+                return GenerateValidCardNumber(cardType);
+            }
+            
+            return finalCardNumber;
+        }
+
+        private int CalculateLuhnChecksum(string cardNumberWithoutChecksum)
+        {
+            int sum = 0;
+            bool alternate = true; // Commencer par true car on ajoute un chiffre à la fin
+            
+            // Parcourir de droite à gauche
+            for (int i = cardNumberWithoutChecksum.Length - 1; i >= 0; i--)
+            {
+                int digit = int.Parse(cardNumberWithoutChecksum[i].ToString());
+                
+                if (alternate)
+                {
+                    digit *= 2;
+                    if (digit > 9)
+                    {
+                        digit -= 9;
+                    }
+                }
+                
+                sum += digit;
+                alternate = !alternate;
+            }
+            
+            // Le chiffre de contrôle est ce qu'il faut ajouter pour que sum % 10 == 0
+            return (10 - (sum % 10)) % 10;
         }
 
         private bool ValidateCardNumber(string cardNumber)

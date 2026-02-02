@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/authStore';
 import Login from '../pages/Login.vue';
 import Signup from '../pages/Signup.vue';
 import UserDashboard from '../pages/UserDashboard.vue';
+import CreateCreditCard from '../pages/creditcards/CreateCreditCard.vue';
 
 const routes = [
     { 
@@ -22,6 +23,11 @@ const routes = [
     { 
         path: '/dashboard', 
         component: UserDashboard,
+        meta: { requiresAuth: true }
+    },
+    { 
+        path: '/creditcards/create', 
+        component: CreateCreditCard,
         meta: { requiresAuth: true }
     }
 ];

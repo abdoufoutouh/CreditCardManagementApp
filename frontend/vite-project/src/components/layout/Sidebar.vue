@@ -7,9 +7,13 @@
     </div>
     
     <nav class="sidebar-nav">
-      <div class="nav-item active">
+      <div class="nav-item" @click="$router.push('/dashboard')">
         <span class="nav-icon">📊</span>
         <span class="nav-text">Dashboard</span>
+      </div>
+      <div class="nav-item" @click="$router.push('/creditcards/create')">
+        <span class="nav-icon">➕</span>
+        <span class="nav-text">Create Card</span>
       </div>
       <div class="nav-item">
         <span class="nav-icon">💳</span>

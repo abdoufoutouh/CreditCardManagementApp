@@ -6,6 +6,7 @@ namespace CreditCardManagementApp.Repositories
     {
         Task<CreditCard> AddAsync(CreditCard creditCard);
         Task<CreditCard?> FindByCardNumberAndUserIdAsync(string cardNumber, int userId);
+        Task<CreditCard?> FindByCardNumberAsync(string cardNumber);
         Task<CreditCard?> FindByIdAsync(int id);
         Task<CreditCard> UpdateAsync(CreditCard creditCard);
         Task<bool> DeleteAsync(CreditCard creditCard);

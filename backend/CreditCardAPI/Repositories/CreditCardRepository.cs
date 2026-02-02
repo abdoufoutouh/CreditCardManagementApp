@@ -26,6 +26,12 @@ namespace CreditCardManagementApp.Repositories
                 .FirstOrDefaultAsync(c => c.CardNumber == cardNumber && c.UserId == userId);
         }
 
+        public async Task<CreditCard?> FindByCardNumberAsync(string cardNumber)
+        {
+            return await _context.CreditCards
+                .FirstOrDefaultAsync(c => c.CardNumber == cardNumber);
+        }
+
         public async Task<CreditCard?> FindByIdAsync(int id)
         {
             return await _context.CreditCards

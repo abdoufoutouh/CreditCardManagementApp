@@ -1,5 +1,6 @@
 using CreditCardManagementApp.DTOS;
 using CreditCardManagementApp.Services;
+using CreditCardManagementApp.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -16,6 +17,42 @@ namespace CreditCardManagementApp.Controllers
         public CreditCardController(ICreditCardService creditCardService)
         {
             _creditCardService = creditCardService;
+        }
+
+        [HttpGet("generate")]
+        public IActionResult GenerateCardNumber([FromQuery] string cardType = "Visa")
+        {
+            try
+            {
+                // Valider le type de carte
+                if (!new[] { "Visa", "Mastercard", "Amex" }.Contains(cardType))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invalid card type. Must be Visa, Mastercard, or Amex."
+                    });
+                }
+
+                // Générer un numéro valide
+                string cardNumber = CardNumberGenerator.GenerateCardNumber(cardType);
+
+                return Ok(new
+                {
+                    success = true,
+                    cardNumber = cardNumber,
+                    cardType = cardType,
+                    message = "Card number generated successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = $"An error occurred while generating card number: {ex.Message}"
+                });
+            }
         }
 
         [HttpPost]
@@ -50,7 +87,7 @@ namespace CreditCardManagementApp.Controllers
                     return BadRequest(new ApiResponse<CreditCardResponseDTO>
                     {
                         Success = false,
-                        Message = "Credit card creation failed. Please check: card number uniqueness, Luhn validation, expiration date (future, max 10 years), credit limit > 0, balance within limit, card type/prefix match, active card limit (max 5), total card limit (max 10), and ensure card number is not blacklisted.",
+                        Message = "This card number is already in use. Please use a different card number.",
                         Data = null
                     });
                 }
@@ -121,7 +158,7 @@ namespace CreditCardManagementApp.Controllers
                     return BadRequest(new ApiResponse<CreditCardResponseDTO>
                     {
                         Success = false,
-                        Message = "Credit card update failed. Please check: card ownership, card number uniqueness (except current record), Luhn validation, expiration date (future, max 10 years), credit limit > 0, balance within limit, card type/prefix match, and ensure card number is not blacklisted.",
+                        Message = "This card number is already in use. Please use a different card number.",
                         Data = null
                     });
                 }
